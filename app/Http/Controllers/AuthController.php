@@ -35,18 +35,18 @@ class AuthController extends Controller
     }
 
 
-    public function registration(Request $request)
+    public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|confirmed|min:8'
+            'password' => 'required|string|confirmed|min:6'
         ]);
 
         try{
             
             if(!$this->model->create($request->all())->exist){
-                return response(['message' => "Data not isnerted"], 200);
+                return response(['message' => "Data not inserted"], 200);
             }
 
             return response(['message' => "Successfully created"], 201);
