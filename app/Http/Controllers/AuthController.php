@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -27,8 +28,11 @@ class AuthController extends Controller
                 return response(['message' => "Account is not registered"], 200);
             }
 
-            $token = $User->createToken($request->email . Str::random(8)) -> plainTextToken;
-            return response ($token, 200);
+            $user = $this->model->where('email', $request->email)->first();
+            $token = $user->createToken($request->email . Str::random(8)) -> plainTextToken;
+            
+            return response (['token' => $token], 200);
+            
         }catch(\Exception $e){
             return response(['message' => $e->getMessage()], 400); //append a message(status code)
         }
@@ -44,11 +48,8 @@ class AuthController extends Controller
         ]);
 
         try{
-            
-            if(!$this->model->create($request->all())->exist){
-                return response(['message' => "Data not inserted"], 200);
-            }
-
+            $request['role'] ='1';
+            !$this->model->create($request->all());
             return response(['message' => "Successfully created"], 201);
         }catch(\Exception $e){
             return response(['message' => $e -> getMessage()], 400);
